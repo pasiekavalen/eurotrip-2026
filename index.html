@@ -1,1 +1,741 @@
-# eurotrip-2026
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EUROTRIP 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --vac:#D6F0E4;--vac-t:#1A5C3A;--vac-b:#52B788;
+  --cumple:#FAD9E8;--cumple-t:#7B2050;--cumple-b:#D4537E;
+  --remoto:#D6E8FA;--remoto-t:#0D3D6E;--remoto-b:#4A9DD4;
+  --transp:#FAF0D6;--transp-t:#6B3D0A;--transp-b:#E9A824;
+  --finde:#EDEDEA;--finde-t:#666660;--finde-b:#C8C8C2;
+  --bg:#F7F5F0;--card:#fff;--text:#1A1A18;--muted:#888880;
+  --border:#E8E6E0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:90px}
+
+/* ── HEADER ── */
+.app-hd{background:var(--card);border-bottom:1px solid var(--border);padding:18px 20px 0;position:sticky;top:0;z-index:20;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.hd-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.hd-title{font-family:'DM Serif Display',serif;font-size:1.5rem;letter-spacing:-.02em;line-height:1}
+.hd-sub{font-size:11px;color:var(--muted);margin-top:3px}
+.sync-pill{font-size:10px;padding:3px 9px;border-radius:10px;background:#f0f0ee;color:var(--muted);display:flex;align-items:center;gap:5px;border:1px solid var(--border)}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:#ccc;flex-shrink:0;transition:.3s}
+.sync-dot.on{background:#52B788}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0}
+.tab{flex:1;padding:9px 0 8px;text-align:center;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:.15s;user-select:none;line-height:1.3}
+.tab span{font-size:15px;display:block;margin-bottom:2px}
+.tab.on{color:var(--text);border-bottom-color:var(--text)}
+
+/* ── PAGES ── */
+.page{display:none;padding:20px 16px 0;max-width:720px;margin:0 auto}
+.page.on{display:block}
+
+/* ── SHARED ── */
+.card-box{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:16px}
+.sec-title{font-family:'DM Serif Display',serif;font-size:1rem;margin-bottom:12px;color:var(--text)}
+.btn{padding:7px 18px;border-radius:20px;border:1.5px solid #ccc;background:var(--card);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;color:var(--muted)}
+.btn:hover{border-color:#999;color:var(--text)}
+.btn.dark{background:var(--text);color:#fff;border-color:var(--text)}
+.btn.dark:hover{background:#333}
+.filter-row{display:flex;align-items:center;gap:7px;margin-bottom:10px;flex-wrap:wrap}
+.fil{background:var(--card);color:var(--muted);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:inherit;transition:.15s}
+.fil.on{background:var(--text);color:#fff;border-color:var(--text);font-weight:500}
+.empty{text-align:center;color:var(--muted);padding:28px 0;font-size:13px}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+
+/* ── MODAL ── */
+#backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:none;align-items:flex-end;justify-content:center;padding:0}
+#backdrop.on{display:flex}
+@media(min-width:560px){#backdrop{align-items:center;padding:16px}}
+.mbox{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;padding:20px}
+@media(min-width:560px){.mbox{border-radius:16px}}
+.mbox h2{font-family:'DM Serif Display',serif;font-size:1.25rem;margin-bottom:14px}
+.mbox label{font-size:11px;font-weight:500;color:var(--muted);margin-bottom:4px;display:block;margin-top:10px;text-transform:uppercase;letter-spacing:.05em}
+.mbox label:first-of-type{margin-top:0}
+.mbox input,.mbox textarea,.mbox select{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:9px;font-size:13px;outline:none;font-family:inherit;background:var(--bg)}
+.mbox input:focus,.mbox textarea:focus,.mbox select:focus{border-color:#999;background:#fff}
+.mbox textarea{resize:vertical;min-height:60px}
+.seg{display:flex;gap:6px;margin-top:4px}
+.seg-b{flex:1;padding:7px 0;font-size:12px;cursor:pointer;border-radius:9px;border:1.5px solid var(--border);background:var(--bg);color:var(--muted);font-family:inherit;transition:.15s}
+.seg-b.on{border-color:var(--text);background:var(--text);color:#fff;font-weight:500}
+.mbtns{display:flex;gap:8px;margin-top:16px}
+.mb-cancel{flex:1;background:none;border:1px solid var(--border);border-radius:9px;padding:9px 0;cursor:pointer;font-size:13px;color:var(--muted);font-family:inherit}
+.mb-cancel:hover{background:var(--bg)}
+.mb-save{flex:1;background:var(--text);color:#fff;border:none;border-radius:9px;padding:9px 0;cursor:pointer;font-size:13px;font-weight:500;font-family:inherit}
+.mb-save:hover{background:#333}
+.mb-danger{flex:1;background:#c0392b;color:#fff;border:none;border-radius:9px;padding:9px 0;cursor:pointer;font-size:13px;font-family:inherit}
+.modal-sub{font-size:12px;color:var(--muted);margin-bottom:14px;text-align:center}
+/* modal día calendario */
+.m-date-lbl{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.m-big-tit{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:10px;line-height:1.2}
+.tipo-badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:10px;margin-bottom:12px;font-weight:500}
+.it-blk{margin-bottom:12px}
+.it-hra{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.it-tit{font-size:14px;font-weight:500;margin-bottom:2px}
+.it-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.it-tip{font-size:11px;background:#FFFBEB;border-left:2px solid var(--transp-b);padding:6px 10px;border-radius:0 6px 6px 0;color:var(--transp-t);margin-top:5px;line-height:1.4}
+.m-div{height:1px;background:var(--border);margin:12px 0}
+
+/* ═══ ITINERARIO ═══ */
+.sub-tabs{display:flex;gap:8px;margin-bottom:16px}
+.stab{flex:1;padding:9px 0;text-align:center;font-size:13px;font-weight:500;border-radius:10px;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--muted);transition:.15s;font-family:inherit}
+.stab.on{background:var(--text);color:#fff;border-color:var(--text)}
+
+/* CALENDARIO */
+.cal-edit-bar{display:flex;justify-content:center;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.edit-hint{font-size:11px;color:var(--muted)}
+.brush-bar{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:16px;display:none}
+.brush-bar.show{display:flex}
+.brush{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:16px;border:1.5px solid var(--finde-b);background:var(--card);font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;color:var(--muted);user-select:none}
+.brush.on{border-width:2px}
+.brush[data-t="V"].on{border-color:var(--vac-b);background:var(--vac);color:var(--vac-t)}
+.brush[data-t="C"].on{border-color:var(--cumple-b);background:var(--cumple);color:var(--cumple-t)}
+.brush[data-t="R"].on{border-color:var(--remoto-b);background:var(--remoto);color:var(--remoto-t)}
+.brush[data-t="T"].on{border-color:var(--transp-b);background:var(--transp);color:var(--transp-t)}
+.brush[data-t="W"].on{border-color:var(--finde-b);background:var(--finde);color:var(--finde-t)}
+.brush[data-t="X"].on{border-color:#ccc;background:#f0f0ee;color:#666}
+.bdot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.months{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+@media(max-width:560px){.months{grid-template-columns:1fr}}
+.mc{background:var(--card);border-radius:14px;padding:14px;border:1px solid var(--border)}
+.mt{font-family:'DM Serif Display',serif;font-size:1.1rem;margin-bottom:10px}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.dh{font-size:9px;font-weight:500;text-align:center;color:var(--muted);padding:2px 0 5px;text-transform:uppercase;letter-spacing:.04em}
+.de{min-height:56px}
+.day{border-radius:6px;padding:4px 2px;min-height:56px;display:flex;flex-direction:column;gap:1px;cursor:default;border:1.5px solid transparent;transition:filter .1s,transform .1s;user-select:none}
+.day.clickable{cursor:pointer}
+.day.clickable:hover{filter:brightness(.94)}
+.day.editable{cursor:pointer}
+.day.editable:hover{transform:scale(1.05);z-index:2;position:relative}
+.dn{font-size:11px;font-weight:500;text-align:center}
+.dc{font-size:8px;text-align:center;font-weight:500;line-height:1.2;margin-top:1px}
+.tX .dn{color:#ccc}.tX .dc{color:#ccc}
+.tV{background:var(--vac);border-color:var(--vac-b)}.tV .dn,.tV .dc{color:var(--vac-t)}
+.tC{background:var(--cumple);border-color:var(--cumple-b)}.tC .dn,.tC .dc{color:var(--cumple-t)}
+.tR{background:var(--remoto);border-color:var(--remoto-b)}.tR .dn,.tR .dc{color:var(--remoto-t)}
+.tT{background:var(--transp);border-color:var(--transp-b)}.tT .dn,.tT .dc{color:var(--transp-t)}
+.tW{background:var(--finde);border-color:var(--finde-b)}.tW .dn,.tW .dc{color:var(--finde-t)}
+.cal-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px}
+@media(max-width:400px){.cal-stats{grid-template-columns:repeat(2,1fr)}}
+.cstat{background:var(--card);border-radius:10px;padding:10px 12px;border:1px solid var(--border)}
+.cstat-lbl{font-size:10px;color:var(--muted);margin-bottom:2px}
+.cstat-num{font-family:'DM Serif Display',serif;font-size:1.7rem;line-height:1}
+
+/* DÍAS */
+.ciudad-tabs{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap}
+.ctab{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;transition:.15s}
+.ctab.on{background:var(--text);color:#fff;border-color:var(--text)}
+.dia-card{background:var(--card);border-radius:13px;border:1px solid var(--border);margin-bottom:8px;overflow:hidden}
+.dia-head{padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.dia-head:hover{background:var(--bg)}
+.dia-num{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--text);min-width:34px;line-height:1}
+.dia-meta{flex:1;min-width:0}
+.dia-tit{font-size:13px;font-weight:600}
+.dia-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.dia-arr{color:#bbb;font-size:12px;transition:.2s;flex-shrink:0}
+.dia-card.open .dia-arr{transform:rotate(180deg)}
+.dia-body{display:none;padding:0 14px 13px;border-top:1px solid #f0ede8}
+.dia-card.open .dia-body{display:block}
+.act-list{margin-top:8px}
+.act-row{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid #f5f2ee}
+.act-row:last-child{border-bottom:none}
+.act-hora{font-size:11px;color:var(--muted);min-width:40px;text-align:right;padding-top:3px;font-weight:500;flex-shrink:0}
+.act-dot-col{display:flex;flex-direction:column;align-items:center;padding-top:5px;flex-shrink:0}
+.act-dot{width:8px;height:8px;border-radius:50%;background:var(--text)}
+.act-vline{width:2px;background:var(--border);flex:1;min-height:14px;margin-top:3px}
+.act-info{flex:1;min-width:0}
+.act-tit{font-size:13px;font-weight:600}
+.act-desc{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.45}
+.act-tip{font-size:11px;background:#FFFBEB;border-left:2px solid var(--transp-b);padding:3px 8px;border-radius:0 6px 6px 0;color:var(--transp-t);margin-top:4px;display:inline-block}
+.act-btns{display:flex;gap:2px;flex-shrink:0}
+.ico{background:none;border:none;cursor:pointer;padding:3px 4px;border-radius:5px;font-size:13px;opacity:.35;transition:.15s;font-family:inherit}
+.ico:hover{opacity:1;background:var(--bg)}
+.ico.r:hover{background:#fde8e8}
+.dia-actions{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap}
+.btn-dashed{background:none;border:1px dashed #ccc;color:var(--muted);border-radius:8px;padding:6px 11px;cursor:pointer;font-size:12px;font-family:inherit}
+.btn-dashed:hover{border-color:#999;color:var(--text)}
+.btn-sm{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:11px;font-family:inherit}
+.btn-sm:hover{background:var(--bg);color:var(--text)}
+.nota-area{width:100%;margin-top:10px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;outline:none;min-height:46px;color:var(--text);background:var(--bg)}
+.nota-area:focus{border-color:#999;background:#fff}
+
+/* ═══ GASTOS ═══ */
+.g-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:8px;margin-bottom:12px}
+.gcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 12px}
+.gcard.v{border-top:2.5px solid var(--cumple-b)}
+.gcard.l{border-top:2.5px solid var(--remoto-b)}
+.gcard-lbl{font-size:11px;color:var(--muted);margin-bottom:3px}
+.gcard-val{font-family:'DM Serif Display',serif;font-size:1.4rem;line-height:1.1;color:var(--text)}
+.gcard.v .gcard-val{color:var(--cumple-t)}
+.gcard.l .gcard-val{color:var(--remoto-t)}
+.deuda{border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500}
+.deuda.ok{background:var(--vac);border:1px solid var(--vac-b);color:var(--vac-t)}
+.deuda.no{background:var(--transp);border:1px solid var(--transp-b);color:var(--transp-t)}
+.gasto-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.gasto-item.paid{opacity:.55;background:var(--bg)}
+.chk-c{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;background:var(--bg);transition:.2s}
+.chk-c.on{background:var(--vac);border-color:var(--vac-b);color:var(--vac-t)}
+.g-info{flex:1;min-width:0}
+.g-nom{font-size:13px;font-weight:600;margin-bottom:2px}
+.gasto-item.paid .g-nom{text-decoration:line-through;color:var(--muted)}
+.g-meta{font-size:11px;color:var(--muted);display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.badge.bv{background:var(--cumple);color:var(--cumple-t)}
+.badge.bl{background:var(--remoto);color:var(--remoto-t)}
+.badge.ba{background:var(--finde);color:var(--finde-t)}
+.badge.bs{background:var(--vac);color:var(--vac-t)}
+.g-monto{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--text);min-width:70px;text-align:right}
+.g-foot{border-top:1px solid var(--border);margin-top:6px;padding-top:9px;display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+
+/* ═══ CHECKLIST ═══ */
+.prog-wrap{margin-bottom:14px}
+.prog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.prog-txt{font-size:13px;color:var(--muted)}
+.prog-pct{font-family:'DM Serif Display',serif;font-size:1.3rem}
+.prog-bg{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:var(--text);border-radius:3px;transition:width .4s}
+.add-row{display:flex;gap:7px;margin-bottom:13px;flex-wrap:wrap}
+.add-row input{flex:1;min-width:130px;padding:8px 11px;border:1px solid var(--border);border-radius:9px;font-size:13px;font-family:inherit;outline:none;background:var(--card)}
+.add-row input:focus{border-color:#999;background:#fff}
+.add-row select{padding:8px 6px;border:1px solid var(--border);border-radius:9px;font-size:12px;font-family:inherit;background:var(--card);outline:none}
+.add-row button{background:var(--text);color:#fff;border:none;border-radius:9px;padding:8px 13px;cursor:pointer;font-size:13px;font-family:inherit}
+.check-sec{margin-bottom:16px}
+.csec-hd{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.sec-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.sec-name{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.sec-cnt{font-size:11px;color:#bbb;margin-left:auto}
+.check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;margin-bottom:5px;border:1px solid var(--border);background:var(--card);transition:.12s}
+.check-item:hover{border-color:#bbb}
+.check-item.done{background:var(--bg);opacity:.6}
+.chk-box{width:20px;height:20px;border-radius:6px;border:1.5px solid #ccc;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--vac-t);margin-top:1px;cursor:pointer;transition:.2s;background:var(--bg)}
+.check-item.done .chk-box{background:var(--vac);border-color:var(--vac-b)}
+.item-body{flex:1;min-width:0;cursor:pointer}
+.item-tit{font-size:13px;font-weight:500}
+.check-item.done .item-tit{text-decoration:line-through;color:var(--muted)}
+.urg{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;margin-top:3px;display:inline-block}
+.urg.alta{background:var(--cumple);color:var(--cumple-t)}
+.urg.media{background:var(--transp);color:var(--transp-t)}
+.urg.baja{background:var(--vac);color:var(--vac-t)}
+.item-btns{display:flex;gap:2px;flex-shrink:0}
+.celebracion{text-align:center;padding:12px;background:var(--vac);border-radius:11px;margin-bottom:14px;font-size:13px;color:var(--vac-t);font-weight:500;display:none;border:1px solid var(--vac-b)}
+</style>
+</head>
+<body>
+
+<div class="app-hd">
+  <div class="hd-row">
+    <div>
+      <div class="hd-title">EUROTRIP 2026</div>
+      <div class="hd-sub">21 ago – 19 sep · Valen &amp; Lara</div>
+    </div>
+    <div class="sync-pill"><div class="sync-dot" id="sync-dot"></div><span id="sync-txt">...</span></div>
+  </div>
+  <div class="tabs">
+    <div class="tab on" id="tab-itinerario" onclick="showTab('itinerario')"><span>📅</span>Itinerario</div>
+    <div class="tab" id="tab-gastos" onclick="showTab('gastos')"><span>💸</span>Gastos</div>
+    <div class="tab" id="tab-checklist" onclick="showTab('checklist')"><span>✅</span>Checklist</div>
+  </div>
+</div>
+
+<!-- ═══ ITINERARIO ═══ -->
+<div class="page on" id="page-itinerario">
+  <div style="height:12px"></div>
+  <div class="sub-tabs">
+    <button class="stab on" id="st-cal" onclick="showSub('cal')">🗓 Calendario</button>
+    <button class="stab" id="st-dias" onclick="showSub('dias')">🗺 Día a día</button>
+  </div>
+
+  <!-- CALENDARIO -->
+  <div id="view-cal">
+    <div class="cal-edit-bar">
+      <button class="btn" id="edit-btn" onclick="toggleEdit()">✏️ Editar calendario</button>
+      <span class="edit-hint" id="edit-hint" style="display:none">Seleccioná un color y pintá los días</span>
+    </div>
+    <div class="brush-bar" id="brush-bar">
+      <div class="brush on" data-t="V" onclick="setBrush('V')"><div class="bdot" style="background:var(--vac);border:1.5px solid var(--vac-b)"></div>Vacaciones</div>
+      <div class="brush" data-t="C" onclick="setBrush('C')"><div class="bdot" style="background:var(--cumple);border:1.5px solid var(--cumple-b)"></div>Especial</div>
+      <div class="brush" data-t="R" onclick="setBrush('R')"><div class="bdot" style="background:var(--remoto);border:1.5px solid var(--remoto-b)"></div>Trabajo remoto</div>
+      <div class="brush" data-t="T" onclick="setBrush('T')"><div class="bdot" style="background:var(--transp);border:1.5px solid var(--transp-b)"></div>Transporte</div>
+      <div class="brush" data-t="W" onclick="setBrush('W')"><div class="bdot" style="background:var(--finde);border:1.5px solid var(--finde-b)"></div>Fin de semana</div>
+      <div class="brush" data-t="X" onclick="setBrush('X')"><div class="bdot" style="background:#eee;border:1.5px solid #ccc"></div>Borrar</div>
+    </div>
+    <div class="months">
+      <div class="mc"><div class="mt">Agosto 2026</div>
+        <div class="cg" id="grid-ago">
+          <div class="dh">L</div><div class="dh">M</div><div class="dh">X</div><div class="dh">J</div><div class="dh">V</div><div class="dh">S</div><div class="dh">D</div>
+        </div>
+      </div>
+      <div class="mc"><div class="mt">Septiembre 2026</div>
+        <div class="cg" id="grid-sep">
+          <div class="dh">L</div><div class="dh">M</div><div class="dh">X</div><div class="dh">J</div><div class="dh">V</div><div class="dh">S</div><div class="dh">D</div>
+        </div>
+      </div>
+    </div>
+    <div class="cal-stats">
+      <div class="cstat"><div class="cstat-lbl">Vacaciones</div><div class="cstat-num" id="st-V" style="color:var(--vac-t)">0</div></div>
+      <div class="cstat"><div class="cstat-lbl">Trabajo remoto</div><div class="cstat-num" id="st-R" style="color:var(--remoto-t)">0</div></div>
+      <div class="cstat"><div class="cstat-lbl">Transporte</div><div class="cstat-num" id="st-T" style="color:var(--transp-t)">0</div></div>
+      <div class="cstat"><div class="cstat-lbl">Fin de semana</div><div class="cstat-num" id="st-W" style="color:var(--finde-t)">0</div></div>
+    </div>
+  </div>
+
+  <!-- DÍAS -->
+  <div id="view-dias" style="display:none">
+    <div class="ciudad-tabs" id="ciudad-tabs"></div>
+    <div id="dias-cont"></div>
+  </div>
+</div>
+
+<!-- ═══ GASTOS ═══ -->
+<div class="page" id="page-gastos">
+  <div style="height:12px"></div>
+  <div class="g-cards">
+    <div class="gcard"><div class="gcard-lbl">Total gastado</div><div class="gcard-val" id="c-tot">$0</div></div>
+    <div class="gcard"><div class="gcard-lbl">Por persona</div><div class="gcard-val" id="c-pp">$0</div></div>
+    <div class="gcard v"><div class="gcard-lbl">Valen pagó</div><div class="gcard-val" id="c-v">$0</div></div>
+    <div class="gcard l"><div class="gcard-lbl">Lara pagó</div><div class="gcard-val" id="c-l">$0</div></div>
+  </div>
+  <div class="deuda ok" id="deuda"><span id="deuda-txt">✓ Todas las deudas están saldadas</span></div>
+  <div class="filter-row">
+    <button class="btn dark" onclick="abrirMG(null)">＋ Agregar gasto</button>
+    <button class="fil on" id="gf-todos" onclick="setGF('todos')">Todos</button>
+    <button class="fil" id="gf-pendientes" onclick="setGF('pendientes')">Pendientes</button>
+    <button class="fil" id="gf-saldados" onclick="setGF('saldados')">Saldados</button>
+  </div>
+  <div id="gastos-lista"></div>
+  <div id="g-foot" style="display:none" class="g-foot"><span id="gf-cnt"></span><span id="gf-tot"></span></div>
+</div>
+
+<!-- ═══ CHECKLIST ═══ -->
+<div class="page" id="page-checklist">
+  <div style="height:12px"></div>
+  <div class="celebracion" id="celebracion">🎉 ¡Todo listo para el viaje!</div>
+  <div class="prog-wrap">
+    <div class="prog-top">
+      <span class="prog-txt" id="prog-txt">0 de 0 completadas</span>
+      <span class="prog-pct" id="prog-pct">0%</span>
+    </div>
+    <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+  <div class="filter-row">
+    <button class="fil on" id="cf-todas" onclick="setCF('todas')">Todas</button>
+    <button class="fil" id="cf-pendientes" onclick="setCF('pendientes')">Pendientes</button>
+    <button class="fil" id="cf-completadas" onclick="setCF('completadas')">Completadas</button>
+  </div>
+  <div class="add-row">
+    <input id="new-task" placeholder="Nueva tarea..." onkeydown="if(event.key==='Enter')addTask()"/>
+    <select id="new-urg"><option value="alta">🔴 Alta</option><option value="media" selected>🟡 Media</option><option value="baja">🟢 Baja</option></select>
+    <select id="new-sec"><option>Documentos</option><option>Reservas</option><option>Equipaje</option><option>Salud</option><option>Finanzas</option><option>Otro</option></select>
+    <button onclick="addTask()">+ Agregar</button>
+  </div>
+  <div id="check-cont"></div>
+</div>
+
+<!-- ═══ MODALES ═══ -->
+<div id="backdrop">
+  <div class="mbox" id="m-gasto" style="display:none">
+    <h2 id="mg-tit">Nuevo gasto</h2>
+    <label>Concepto</label><input id="g-concepto" placeholder="Ej: Hospedaje Roma"/>
+    <label>Monto (US$)</label><input id="g-monto" type="number" placeholder="0.00"/>
+    <label>¿Quién pagó?</label>
+    <div class="seg" style="margin-top:4px">
+      <button class="seg-b on" id="seg-Valen" onclick="selP('Valen')">Valen</button>
+      <button class="seg-b" id="seg-Lara" onclick="selP('Lara')">Lara</button>
+      <button class="seg-b" id="seg-Ambas" onclick="selP('Ambas')">Ambas</button>
+    </div>
+    <div class="mbtns"><button class="mb-cancel" onclick="cerrar()">Cancelar</button><button class="mb-save" onclick="guardarG()">Guardar</button></div>
+  </div>
+
+  <div class="mbox" id="m-del" style="display:none;text-align:center">
+    <h2 id="del-tit">¿Eliminar?</h2>
+    <p class="modal-sub">Esta acción no se puede deshacer.</p>
+    <div class="mbtns"><button class="mb-cancel" onclick="cerrar()">Cancelar</button><button class="mb-danger" onclick="confDel()">Eliminar</button></div>
+  </div>
+
+  <div class="mbox" id="m-act" style="display:none">
+    <h2 id="ma-tit">Nueva actividad</h2>
+    <label>Hora</label><input id="a-hora" placeholder="10:00"/>
+    <label>Título</label><input id="a-tit" placeholder="Ej: Visitar el Louvre"/>
+    <label>Descripción</label><textarea id="a-desc" placeholder="Info, reservas, dirección..."></textarea>
+    <label>💡 Tip</label><input id="a-tip" placeholder="Ej: Reservar con anticipación"/>
+    <div class="mbtns"><button class="mb-cancel" onclick="cerrar()">Cancelar</button><button class="mb-save" onclick="guardarA()">Guardar</button></div>
+  </div>
+
+  <div class="mbox" id="m-dia" style="display:none">
+    <h2>Editar día</h2>
+    <label>Emoji</label><input id="d-emoji" placeholder="🏛️"/>
+    <label>Título</label><input id="d-tit" placeholder="Roma"/>
+    <label>Ciudad</label><input id="d-ciudad" placeholder="Roma"/>
+    <div class="mbtns"><button class="mb-cancel" onclick="cerrar()">Cancelar</button><button class="mb-save" onclick="guardarD()">Guardar</button></div>
+  </div>
+
+  <div class="mbox" id="m-task" style="display:none">
+    <h2>Editar tarea</h2>
+    <label>Tarea</label><input id="t-tit"/>
+    <label>Urgencia</label>
+    <select id="t-urg"><option value="alta">🔴 Alta</option><option value="media">🟡 Media</option><option value="baja">🟢 Baja</option></select>
+    <label>Sección</label>
+    <select id="t-sec"><option>Documentos</option><option>Reservas</option><option>Equipaje</option><option>Salud</option><option>Finanzas</option><option>Otro</option></select>
+    <div class="mbtns"><button class="mb-cancel" onclick="cerrar()">Cancelar</button><button class="mb-save" onclick="guardarT()">Guardar</button></div>
+  </div>
+
+  <div class="mbox" id="m-caldia" style="display:none;max-width:440px">
+    <div id="m-caldia-cont"></div>
+    <div class="mbtns" style="margin-top:14px"><button class="mb-cancel" style="flex:none;padding:8px 20px" onclick="cerrar()">Cerrar</button></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyBnZB0id04DoKTlHNTELUnT6-O9M5P0tvM",
+  authDomain:"eurotrip-2026-f4a4f.firebaseapp.com",
+  databaseURL:"https://eurotrip-2026-f4a4f-default-rtdb.firebaseio.com",
+  projectId:"eurotrip-2026-f4a4f",
+  storageBucket:"eurotrip-2026-f4a4f.firebasestorage.app",
+  messagingSenderId:"436781461419",
+  appId:"1:436781461419:web:a07f55ad353c6a7bb0ecee"
+});
+const db=firebase.database();
+db.ref('.info/connected').on('value',s=>{
+  const on=s.val();
+  document.getElementById('sync-dot').className='sync-dot'+(on?' on':'');
+  document.getElementById('sync-txt').textContent=on?'Sincronizado':'Sin conexión';
+});
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const fmt=n=>'US$ '+Number(n||0).toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+// MODAL
+const backdrop=document.getElementById('backdrop');
+let delCb=null;
+function abrir(id){document.querySelectorAll('.mbox').forEach(m=>m.style.display='none');document.getElementById(id).style.display='block';backdrop.className='on';}
+function cerrar(){backdrop.className='';document.querySelectorAll('.mbox').forEach(m=>m.style.display='none');}
+backdrop.addEventListener('click',e=>{if(e.target===backdrop)cerrar();});
+
+// TABS
+function showTab(t){
+  ['itinerario','gastos','checklist'].forEach(x=>{
+    document.getElementById('page-'+x).classList.toggle('on',x===t);
+    document.getElementById('tab-'+x).classList.toggle('on',x===t);
+  });
+}
+function showSub(t){
+  document.getElementById('view-cal').style.display=t==='cal'?'block':'none';
+  document.getElementById('view-dias').style.display=t==='dias'?'block':'none';
+  document.getElementById('st-cal').classList.toggle('on',t==='cal');
+  document.getElementById('st-dias').classList.toggle('on',t==='dias');
+}
+
+// ════════════ CALENDARIO ════════════
+const CAL_DEFAULT={
+  ago:{20:{t:'T',c:'✈ EZE→MAD'},21:{t:'C',c:'🎂 Madrid'},22:{t:'W',c:'Madrid'},23:{t:'W',c:'Madrid'},24:{t:'V',c:'Madrid'},25:{t:'T',c:'→ BCL'},26:{t:'V',c:'Barcelona'},27:{t:'V',c:'Barcelona'},28:{t:'T',c:'→ OPO'},29:{t:'W',c:'Oporto'},30:{t:'W',c:'Oporto'},31:{t:'R',c:'Oporto 💻'}},
+  sep:{1:{t:'R',c:'Oporto 💻'},2:{t:'T',c:'→ París'},3:{t:'R',c:'París 💻'},4:{t:'R',c:'París 💻'},5:{t:'W',c:'París'},6:{t:'T',c:'→ Milán'},7:{t:'V',c:'Milán'},8:{t:'T',c:'→ Venecia'},9:{t:'V',c:'Venecia'},10:{t:'T',c:'→ Florencia'},11:{t:'V',c:'Florencia'},12:{t:'W',c:'Florencia'},13:{t:'T',c:'→ Roma'},14:{t:'V',c:'Roma'},15:{t:'V',c:'Roma'},16:{t:'V',c:'Roma'},17:{t:'V',c:'Roma'},18:{t:'T',c:'→ Madrid'},19:{t:'T',c:'✈ MAD→BUE'}}
+};
+let calData={ago:{...CAL_DEFAULT.ago},sep:{...CAL_DEFAULT.sep}};
+let editMode=false, brush='V';
+const calRef=db.ref('calendario_v2');
+const TLAB={V:'Vacaciones',R:'Trabajo remoto',T:'Transporte',W:'Fin de semana',C:'Especial',X:''};
+const TBG={V:'var(--vac)',R:'var(--remoto)',T:'var(--transp)',W:'var(--finde)',C:'var(--cumple)',X:'transparent'};
+const TTC={V:'var(--vac-t)',R:'var(--remoto-t)',T:'var(--transp-t)',W:'var(--finde-t)',C:'var(--cumple-t)',X:'#ccc'};
+
+// Load/seed calendar
+calRef.once('value',s=>{
+  if(s.val()){
+    const d=s.val();
+    if(d.ago) Object.assign(calData.ago, d.ago);
+    if(d.sep) Object.assign(calData.sep, d.sep);
+  } else {
+    calRef.set({ago:CAL_DEFAULT.ago, sep:CAL_DEFAULT.sep});
+  }
+  buildGrids(); updateStats();
+});
+calRef.on('value',s=>{
+  if(!s.val()) return;
+  const d=s.val();
+  if(d.ago) Object.assign(calData.ago, d.ago);
+  if(d.sep) Object.assign(calData.sep, d.sep);
+  buildGrids(); updateStats();
+});
+
+function toggleEdit(){
+  editMode=!editMode;
+  const btn=document.getElementById('edit-btn');
+  btn.className=editMode?'btn dark':'btn';
+  btn.textContent=editMode?'✅ Guardar':'✏️ Editar calendario';
+  document.getElementById('brush-bar').className=editMode?'brush-bar show':'brush-bar';
+  document.getElementById('edit-hint').style.display=editMode?'block':'none';
+  buildGrids();
+}
+function setBrush(t){
+  brush=t;
+  document.querySelectorAll('.brush').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+}
+function buildGrids(){
+  buildGrid('ago',31,5,calData.ago,'grid-ago');
+  buildGrid('sep',30,1,calData.sep,'grid-sep');
+}
+function buildGrid(month,days,offset,data,gridId){
+  const grid=document.getElementById(gridId);
+  grid.querySelectorAll('.day,.de').forEach(e=>e.remove());
+  for(let i=0;i<offset;i++){const e=document.createElement('div');e.className='de';grid.appendChild(e);}
+  for(let d=1;d<=days;d++){
+    const info=data[d]; const t=info?info.t:'X';
+    const div=document.createElement('div');
+    div.className=`day t${t}${editMode?' editable':info&&t!=='X'?' clickable':''}`;
+    div.innerHTML=`<div class="dn">${d}</div>${info&&t!=='X'?`<div class="dc">${info.c||''}</div>`:''}`;
+    if(editMode){
+      div.onclick=()=>{ paintDay(month,d,info); };
+    } else if(info&&t!=='X'){
+      div.onclick=()=>abrirCalDia(month,d,info,t);
+    }
+    grid.appendChild(div);
+  }
+}
+function paintDay(month,d,info){
+  if(brush==='X'){
+    // reset to default or clear
+    const def=CAL_DEFAULT[month][d];
+    if(def) calData[month][d]={...def};
+    else delete calData[month][d];
+  } else {
+    const def=CAL_DEFAULT[month][d];
+    calData[month][d]={t:brush, c:info?info.c:(def?def.c:'')};
+  }
+  // Save to Firebase
+  calRef.child(month+'/'+d).set(calData[month][d]||null);
+  buildGrids(); updateStats();
+}
+function abrirCalDia(month,d,info,tipo){
+  const mesNom=month==='ago'?'ago':'sep';
+  const diaData=dias.find(x=>x.fecha===`${d} ${mesNom}`);
+  let html=`<div class="m-date-lbl">${month==='ago'?'Agosto':'Septiembre'} 2026</div>
+    <div class="m-big-tit">${d} ${month==='ago'?'agosto':'septiembre'} — ${esc(info.c)}</div>
+    <span class="tipo-badge" style="background:${TBG[tipo]};color:${TTC[tipo]}">${TLAB[tipo]||''}</span>`;
+  if(diaData&&diaData.actividades&&diaData.actividades.length){
+    html+=`<div class="m-div"></div>`;
+    diaData.actividades.forEach(a=>{
+      html+=`<div class="it-blk">
+        ${a.hora?`<div class="it-hra">${esc(a.hora)}</div>`:''}
+        <div class="it-tit">${esc(a.titulo)}</div>
+        ${a.desc?`<div class="it-desc">${esc(a.desc)}</div>`:''}
+        ${a.tip?`<div class="it-tip">💡 ${esc(a.tip)}</div>`:''}
+      </div>`;
+    });
+  }
+  if(diaData&&diaData.nota){html+=`<div class="m-div"></div><div class="it-hra">Notas</div><div class="it-desc">${esc(diaData.nota)}</div>`;}
+  document.getElementById('m-caldia-cont').innerHTML=html;
+  abrir('m-caldia');
+}
+function updateStats(){
+  const c={V:0,R:0,T:0,W:0};
+  [calData.ago,calData.sep].forEach(mo=>{
+    Object.values(mo).forEach(d=>{if(c[d.t]!==undefined)c[d.t]++;});
+  });
+  ['V','R','T','W'].forEach(k=>{document.getElementById('st-'+k).textContent=c[k];});
+}
+
+// ════════════ ITINERARIO DÍAS ════════════
+let dias=[], ciudadF='Todas', actDiaId=null, actIdx=null, editDiaId=null;
+const iRef=db.ref('itinerario_v3');
+const DIAS_INIT=[
+  {fecha:'20 ago',dia:'Jueves',ciudad:'Buenos Aires',emoji:'✈️',titulo:'Día de viaje',actividades:[{hora:'17:50',titulo:'Vuelo EZE → MAD (Iberia)',desc:'Aeropuerto Ezeiza · Reserva #854961336800',tip:'Llegar 3hs antes · check-in online 24hs antes · llega el 21 a las 10:45'}],nota:''},
+  {fecha:'21 ago',dia:'Viernes',ciudad:'Madrid',emoji:'🎂',titulo:'Llegada Madrid · Cumpleaños',actividades:[{hora:'10:45',titulo:'Llegada Barajas T4',desc:'Pasaporte · equipaje',tip:'Metro L8 al centro ~€5 · Taxi ~€35'},{hora:'13:00',titulo:'Check-in y descanso',desc:'Dejar valijas · recuperarse del vuelo',tip:'Si el cuarto no está listo podés dejar el equipaje'},{hora:'19:00',titulo:'Primera noche en Gran Vía',desc:'El paseo más emblemático de Madrid',tip:'Casa Lucio en La Latina para la cena de cumpleaños'}],nota:''},
+  {fecha:'22 ago',dia:'Sábado',ciudad:'Madrid',emoji:'🇪🇸',titulo:'Arte y Retiro',actividades:[{hora:'10:00',titulo:'Museo del Prado o Reina Sofía',desc:'Las Meninas · Guernica',tip:'Reservar online · Prado gratis 18:00–20:00'},{hora:'13:00',titulo:'Almuerzo zona Jerónimos',desc:'',tip:''},{hora:'15:30',titulo:'Parque del Retiro',desc:'Barca en el lago · Palacio de Cristal',tip:'Fin de semana hay artistas callejeros'},{hora:'20:00',titulo:'Cena en La Latina',desc:'Calle Cava Baja — la mejor calle de tapas',tip:''}],nota:''},
+  {fecha:'23 ago',dia:'Domingo',ciudad:'Madrid',emoji:'🇪🇸',titulo:'Barrios de Madrid',actividades:[{hora:'10:00',titulo:'Malasaña',desc:'Cafés · librerías · ambiente hipster',tip:'Mejor por la mañana'},{hora:'13:00',titulo:'Mercado de San Miguel',desc:'Tapas · vermut · el clásico madrileño',tip:'Llegar antes de las 13:00'},{hora:'15:30',titulo:'Lavapiés',desc:'El barrio más multicultural de Madrid',tip:''},{hora:'21:00',titulo:'Cena en Chueca',desc:'',tip:''}],nota:''},
+  {fecha:'24 ago',dia:'Lunes',ciudad:'Madrid',emoji:'🇪🇸',titulo:'Clásicos de Madrid',actividades:[{hora:'10:00',titulo:'Plaza Mayor y Puerta del Sol',desc:'Bocadillo de calamares en Bar La Campana',tip:'~€3.50 — es un must'},{hora:'12:00',titulo:'Barrio de las Letras',desc:'Calle Huertas · ambiente literario',tip:''},{hora:'16:00',titulo:'Palacio Real',desc:'Exterior · Jardines de Sabatini',tip:'Interior ~€14 · exterior gratis'},{hora:'19:30',titulo:'Templo de Debod al atardecer',desc:'Las mejores vistas al atardecer de Madrid',tip:'Llegar 30 min antes · gratis'}],nota:''},
+  {fecha:'25 ago',dia:'Martes',ciudad:'Barcelona',emoji:'🚄',titulo:'Viaje a Barcelona · AVE',actividades:[{hora:'Mañana',titulo:'Desayuno y traslado a Atocha',desc:'Atocha tiene jardín tropical adentro',tip:'Cierre 2 min antes — no llegar tarde'},{hora:'~',titulo:'Tren AVE Madrid → Barcelona (~2:30 hs)',desc:'Reserva 3DVTSG · ya pagado',tip:'L3 metro conecta Sants con el Gótico en 10 min'},{hora:'Tarde',titulo:'Llegada · check-in · Gótico',desc:'Primer paseo por el Barrio Gótico',tip:''}],nota:''},
+  {fecha:'26 ago',dia:'Miércoles',ciudad:'Barcelona',emoji:'🏙️',titulo:'Gaudí · Barcelona',actividades:[{hora:'09:00',titulo:'Sagrada Família',desc:'La obra maestra de Gaudí · subir a las torres',tip:'⚠️ RESERVAR YA en sagradafamilia.org — se agota semanas antes'},{hora:'12:00',titulo:'El Born',desc:'Barrio medieval · mercado cubierto del siglo XIX',tip:'El Mercat del Born tiene restos arqueológicos medievales'},{hora:'16:00',titulo:'Barceloneta',desc:'Playa · chiringuitos',tip:'El agua en agosto está perfecta ~25°C'}],nota:''},
+  {fecha:'27 ago',dia:'Jueves',ciudad:'Barcelona',emoji:'🏙️',titulo:'Park Güell · Gràcia',actividades:[{hora:'10:00',titulo:'Park Güell',desc:'Zona monumental con reserva previa',tip:'parkguell.barcelona · llegar a la hora exacta'},{hora:'13:00',titulo:'Vermut en Gràcia',desc:'Plazas llenas de vida',tip:''},{hora:'15:30',titulo:'Las Ramblas · La Boqueria',desc:'',tip:'La Boqueria mejor para ver que para comer'},{hora:'Tarde',titulo:'Paseo de Gràcia · Casa Batlló',desc:'Arquitectura modernista',tip:'~€35 · espectacular de noche'}],nota:''},
+  {fecha:'28 ago',dia:'Viernes',ciudad:'Oporto',emoji:'🇵🇹',titulo:'Vuelo a Oporto · 07:00',actividades:[{hora:'05:30',titulo:'Levantarse · traslado al aeropuerto',desc:'',tip:'⚠️ Vuelo muy temprano — preparar todo la noche anterior'},{hora:'07:00',titulo:'Vuelo BCN → OPO (Iberia · 2hs)',desc:'Reserva #538623346400',tip:'Tarjeta Valen 1 cuota'},{hora:'09:00',titulo:'Llegada · check-in · Ribeira',desc:'Explorar el barrio frente al Duero',tip:'Primer Oporto wine y francesinha'}],nota:''},
+  {fecha:'29 ago',dia:'Sábado',ciudad:'Oporto',emoji:'🇵🇹',titulo:'Centro histórico · Oporto',actividades:[{hora:'09:00',titulo:'Estación de São Bento',desc:'Azulejos impresionantes',tip:''},{hora:'10:30',titulo:'Livraria Lello',desc:'La librería más famosa de Portugal',tip:'Ticket online €5 (descuenta de compra)'},{hora:'13:00',titulo:'Almuerzo — bacalhau à Brás',desc:'',tip:''},{hora:'Tarde',titulo:'Barrio da Sé · Catedral · miradores',desc:'Vistas sobre el río Duero',tip:''}],nota:''},
+  {fecha:'30 ago',dia:'Domingo',ciudad:'Oporto',emoji:'🇵🇹',titulo:'Gaia y vinos · Oporto',actividades:[{hora:'Mañana',titulo:'Cruzar el Puente Dom Luís a pie',desc:'Vistas increíbles desde arriba',tip:''},{hora:'11:00',titulo:'Vila Nova de Gaia — bodegas',desc:'Las bodegas históricas de vino de Oporto',tip:'Graham\'s o Sandeman · tour + cata ~€15'},{hora:'Tarde',titulo:'Playa de Matosinhos',desc:'20 min en metro',tip:''}],nota:''},
+  {fecha:'31 ago',dia:'Lunes',ciudad:'Oporto',emoji:'💻',titulo:'Trabajo remoto · Oporto',actividades:[{hora:'Mañana',titulo:'Mañana libre',desc:'Paseo · café · desayuno tranquilo',tip:''},{hora:'14:00',titulo:'💻 TRABAJO (14:00–21:00)',desc:'9:00–16:00 horario Argentina',tip:'Cafés con buena WiFi: Bonfim o Cedofeita'}],nota:''},
+  {fecha:'01 sep',dia:'Martes',ciudad:'Oporto',emoji:'💻',titulo:'Trabajo remoto · Oporto',actividades:[{hora:'Mañana',titulo:'Mañana libre · barrios',desc:'Bonfim o Cedofeita',tip:''},{hora:'14:00',titulo:'💻 TRABAJO (14:00–21:00)',desc:'9:00–16:00 horario Argentina',tip:''},{hora:'Noche',titulo:'Cena · preparar valijas',desc:'Mañana sale el vuelo a París',tip:''}],nota:''},
+  {fecha:'02 sep',dia:'Miércoles',ciudad:'París',emoji:'🗼',titulo:'Vuelo a París · Llegada',actividades:[{hora:'Mañana',titulo:'Vuelo Oporto → París',desc:'Pendiente confirmar · low cost',tip:''},{hora:'Tarde',titulo:'Llegada · check-in',desc:'',tip:'RER B desde CDG ~€11 · ~35 min'},{hora:'19:00',titulo:'Torre Eiffel al atardecer',desc:'Subir al 2do piso',tip:'Reservar en toureiffel.paris'},{hora:'21:00',titulo:'Cena en el Trocadéro',desc:'',tip:''}],nota:''},
+  {fecha:'03 sep',dia:'Jueves',ciudad:'París',emoji:'🗼',titulo:'Louvre + Trabajo',actividades:[{hora:'09:00',titulo:'Louvre — llegar al abrir',desc:'Mona Lisa · Venus de Milo',tip:'⚠️ RESERVAR en louvre.fr · al menos 3 horas'},{hora:'12:30',titulo:'Almuerzo en Le Marais',desc:'Falafel rue des Rosiers',tip:''},{hora:'14:00',titulo:'💻 TRABAJO (14:00–21:00)',desc:'9:00–16:00 Argentina',tip:''},{hora:'21:00',titulo:'Navegación nocturna — Bateaux Mouches',desc:'~1 hora por el Sena iluminado',tip:'Reservar online'}],nota:''},
+  {fecha:'04 sep',dia:'Viernes',ciudad:'París',emoji:'🗼',titulo:'Montmartre + Trabajo',actividades:[{hora:'09:00',titulo:'Montmartre · Sacré-Cœur',desc:'Subir por las escalinatas',tip:'Llegar antes de las 10'},{hora:'14:00',titulo:'💻 TRABAJO (14:00–21:00)',desc:'9:00–16:00 Argentina',tip:''},{hora:'Noche',titulo:'Paseo nocturno por Le Marais',desc:'',tip:''}],nota:''},
+  {fecha:'05 sep',dia:'Sábado',ciudad:'París',emoji:'🗼',titulo:'París libre',actividades:[{hora:'Mañana',titulo:'Musée d\'Orsay',desc:'Van Gogh · Monet · Renoir',tip:'~€16 · reservar online'},{hora:'Tarde',titulo:'Champs-Élysées · Arco del Triunfo',desc:'',tip:'Subir ~€13'},{hora:'Noche',titulo:'Última noche en París — cena especial',desc:'',tip:'Reservar mesa'}],nota:''},
+  {fecha:'06 sep',dia:'Domingo',ciudad:'Milán',emoji:'🇮🇹',titulo:'Tren a Milán · TGV',actividades:[{hora:'Mañana',titulo:'Desayuno parisino de despedida',desc:'',tip:''},{hora:'~',titulo:'Tren TGV París → Milán (~7 hs)',desc:'~€50-80 · Trainline',tip:'Reservar con semanas de anticipación'},{hora:'Tarde',titulo:'Llegada Milán · check-in',tip:''},{hora:'Noche',titulo:'Navigli — aperitivo al canal',desc:'',tip:'Aperitivo ~18:00 incluye comida'}],nota:''},
+  {fecha:'07 sep',dia:'Lunes',ciudad:'Milán',emoji:'🇮🇹',titulo:'Milán',actividades:[{hora:'09:00',titulo:'Duomo di Milano',desc:'Subir a la terraza',tip:'duomomilano.it · ~€15'},{hora:'11:00',titulo:'La Última Cena',desc:'Leonardo da Vinci',tip:'⚠️ RESERVAR YA en vivaticket.com — cupos limitadísimos'},{hora:'13:00',titulo:'Almuerzo — risotto alla milanese',desc:'',tip:''},{hora:'15:00',titulo:'Galleria Vittorio Emanuele II',desc:'',tip:'Gratis · pisar el toro da suerte'}],nota:''},
+  {fecha:'08 sep',dia:'Martes',ciudad:'Venecia',emoji:'🚤',titulo:'Tren a Venecia',actividades:[{hora:'Mañana',titulo:'Paseo rápido por Brera',desc:'Barrio artístico de Milán',tip:''},{hora:'~',titulo:'Tren Milán → Venecia (~2:30 hs)',desc:'Trenitalia · ~€10-20',tip:''},{hora:'Tarde',titulo:'Llegada · primeros canales',desc:'Caminar sin destino — es lo mejor',tip:'Vaporetto 24hs ~€25'},{hora:'Noche',titulo:'Cicchetti en un bacaro',desc:'La mejor intro a Venecia',tip:''}],nota:''},
+  {fecha:'09 sep',dia:'Miércoles',ciudad:'Venecia',emoji:'🚤',titulo:'Venecia',actividades:[{hora:'07:30',titulo:'Entrar temprano — antes de las 9 es mágico',desc:'',tip:'La ciudad sin turistas es completamente diferente'},{hora:'08:00',titulo:'Plaza San Marcos · Basílica · Campanile',desc:'',tip:'Basílica gratis · Campanile ~€8'},{hora:'10:00',titulo:'Perderse por los canales sin mapa',desc:'El mejor plan de Venecia',tip:''},{hora:'15:00',titulo:'Puente de Rialto · mercado',desc:'',tip:''},{hora:'17:30',titulo:'Atardecer desde el Puente de la Academia',desc:'',tip:''}],nota:''},
+  {fecha:'10 sep',dia:'Jueves',ciudad:'Florencia',emoji:'🌺',titulo:'Tren a Florencia',actividades:[{hora:'~',titulo:'Tren Venecia → Florencia (~2 hs)',desc:'Trenitalia · ~€10-20',tip:''},{hora:'Tarde',titulo:'Llegada · Ponte Vecchio',desc:'',tip:''},{hora:'Noche',titulo:'Primer gelato · Oltrarno',desc:'',tip:'Gelateria dei Neri — el mejor de Florencia'}],nota:''},
+  {fecha:'11 sep',dia:'Viernes',ciudad:'Florencia',emoji:'🌺',titulo:'Arte · Florencia',actividades:[{hora:'09:00',titulo:'Galería Uffizi',desc:'Botticelli · Da Vinci · Miguel Ángel',tip:'RESERVAR en uffizi.it · ~€20'},{hora:'12:30',titulo:'Almuerzo en Mercato Centrale',desc:'',tip:''},{hora:'14:30',titulo:'Duomo · Cúpula de Brunelleschi',desc:'463 escalones — sin ascensor',tip:'operaduomo.firenze.it · ~€18 · reservar'},{hora:'Noche',titulo:'Bistecca alla fiorentina',desc:'El plato estrella de Florencia',tip:''}],nota:''},
+  {fecha:'12 sep',dia:'Sábado',ciudad:'Florencia',emoji:'🌺',titulo:'Colinas · Florencia',actividades:[{hora:'09:30',titulo:'Jardín de Boboli · Palazzo Pitti',desc:'',tip:''},{hora:'12:00',titulo:'Piazzale Michelangelo',desc:'Vistas panorámicas de Florencia',tip:'Subir por la Vía delle Rampe · gratis'},{hora:'15:30',titulo:'Ponte Vecchio · paseo',desc:'',tip:''},{hora:'Noche',titulo:'Gelateria dei Neri',desc:'',tip:''}],nota:''},
+  {fecha:'13 sep',dia:'Domingo',ciudad:'Roma',emoji:'🏛️',titulo:'Tren a Roma',actividades:[{hora:'Mañana',titulo:'Mercado de Sant\'Ambrogio',desc:'Local y auténtico',tip:''},{hora:'~',titulo:'Tren Florencia → Roma (~1:30 hs)',desc:'Trenitalia · ~€10-20',tip:''},{hora:'Tarde',titulo:'Llegada · Trastevere',desc:'',tip:''},{hora:'Noche',titulo:'Cena en Trastevere',desc:'',tip:''}],nota:''},
+  {fecha:'14 sep',dia:'Lunes',ciudad:'Roma',emoji:'🏛️',titulo:'Coliseo · Roma',actividades:[{hora:'09:00',titulo:'Coliseo — llegar al abrir',desc:'',tip:'RESERVAR en coopculture.it'},{hora:'11:00',titulo:'Foro Romano + Palatino',desc:'Entrada incluida',tip:''},{hora:'13:30',titulo:'Almuerzo — supplì y pizza al taglio',desc:'',tip:''},{hora:'15:30',titulo:'Circo Máximo · Jardín de los Naranjos',desc:'',tip:''},{hora:'Noche',titulo:'Cena en Trastevere',desc:'',tip:''}],nota:''},
+  {fecha:'15 sep',dia:'Martes',ciudad:'Roma',emoji:'🏛️',titulo:'Vaticano · Roma',actividades:[{hora:'09:00',titulo:'Museos Vaticanos + Capilla Sixtina',desc:'',tip:'RESERVAR en museivaticani.va — semanas de anticipación'},{hora:'12:30',titulo:'Basílica de San Pedro · cúpula',desc:'Subir gratis a pie (551 escalones)',tip:''},{hora:'14:00',titulo:'Almuerzo en Prati',desc:'',tip:''},{hora:'16:00',titulo:'Castel Sant\'Angelo',desc:'',tip:''}],nota:''},
+  {fecha:'16 sep',dia:'Miércoles',ciudad:'Roma',emoji:'🏛️',titulo:'Centro histórico · Roma',actividades:[{hora:'07:00',titulo:'Fontana di Trevi de madrugada',desc:'Casi sin gente',tip:'De madrugada es mágica'},{hora:'09:00',titulo:'Panteón',desc:'',tip:'~€5 · llegar temprano'},{hora:'11:00',titulo:'Piazza Navona · Campo de\' Fiori',desc:'',tip:''},{hora:'13:00',titulo:'Almuerzo — cacio e pepe',desc:'La pasta más romana',tip:''},{hora:'15:30',titulo:'Barrio judío · Largo di Torre Argentina',desc:'Donde mataron a Julio César — hoy santuario de gatos',tip:''}],nota:''},
+  {fecha:'17 sep',dia:'Jueves',ciudad:'Roma',emoji:'🏛️',titulo:'Roma local',actividades:[{hora:'Mañana',titulo:'Barrio Pigneto u Ostiense',desc:'Roma sin turistas',tip:''},{hora:'13:00',titulo:'Mercado de Testaccio',desc:'El mejor mercado de Roma',tip:''},{hora:'Noche',titulo:'Cena de despedida de Italia',desc:'',tip:'Reservar mesa especial'}],nota:''},
+  {fecha:'18 sep',dia:'Viernes',ciudad:'Madrid',emoji:'✈️',titulo:'Vuelo Roma → Madrid',actividades:[{hora:'Mañana',titulo:'Última passeggiata por Roma',desc:'',tip:''},{hora:'~',titulo:'Vuelo Roma → Madrid',desc:'Pendiente confirmar',tip:'Llegar 3hs antes'},{hora:'Noche',titulo:'Llegada Madrid · última noche europea',desc:'',tip:''}],nota:''},
+  {fecha:'19 sep',dia:'Sábado',ciudad:'Buenos Aires',emoji:'✈️',titulo:'Vuelo de regreso · MAD→BUE',actividades:[{hora:'12:15',titulo:'Vuelo Madrid → Buenos Aires (Iberia)',desc:'',tip:'Llegar al aeropuerto 3hs antes · check-in online 24hs antes'}],nota:''},
+];
+
+iRef.once('value',s=>{if(!s.val())DIAS_INIT.forEach(d=>iRef.push({...d}));});
+iRef.on('value',s=>{
+  const d=s.val()||{};
+  dias=Object.entries(d).map(([id,v])=>({id,...v}));
+  dias.sort((a,b)=>{const m={'ago':8,'sep':9};const[da,ma]=(a.fecha||'').split(' '),[db2,mb]=(b.fecha||'').split(' ');return(m[ma]||0)-(m[mb]||0)||(parseInt(da)-parseInt(db2));});
+  renderCTabs();renderDias();
+});
+function renderCTabs(){
+  const cs=['Todas',...new Set(dias.map(d=>d.ciudad))];
+  document.getElementById('ciudad-tabs').innerHTML=cs.map(c=>`<button class="ctab${ciudadF===c?' on':''}" onclick="setCiudad('${c}')">${c}</button>`).join('');
+}
+function setCiudad(c){ciudadF=c;renderCTabs();renderDias();}
+function renderDias(){
+  const list=ciudadF==='Todas'?dias:dias.filter(d=>d.ciudad===ciudadF);
+  const cont=document.getElementById('dias-cont');
+  if(!list.length){cont.innerHTML='<div class="empty">Sin días para esta ciudad.</div>';return;}
+  cont.innerHTML=list.map(d=>{
+    const acts=d.actividades||[];
+    const aHtml=acts.length?`<div class="act-list">`+acts.map((a,i)=>`
+      <div class="act-row">
+        <div class="act-hora">${esc(a.hora||'')}</div>
+        <div class="act-dot-col"><div class="act-dot"></div>${i<acts.length-1?'<div class="act-vline"></div>':''}</div>
+        <div class="act-info">
+          <div class="act-tit">${esc(a.titulo)}</div>
+          ${a.desc?`<div class="act-desc">${esc(a.desc)}</div>`:''}
+          ${a.tip?`<div class="act-tip">💡 ${esc(a.tip)}</div>`:''}
+        </div>
+        <div class="act-btns">
+          <button class="ico" onclick="abrirEA('${d.id}',${i})">✏️</button>
+          <button class="ico r" onclick="abrirDA('${d.id}',${i})">🗑</button>
+        </div>
+      </div>`).join('')+`</div>`:'<p style="color:var(--muted);font-size:12px;padding:8px 0">Sin actividades cargadas.</p>';
+    return`<div class="dia-card" id="dc-${d.id}">
+      <div class="dia-head" onclick="toggleDia('${d.id}')">
+        <div class="dia-num">${d.fecha.split(' ')[0]}</div>
+        <div class="dia-meta"><div class="dia-tit">${d.emoji} ${esc(d.titulo)}</div><div class="dia-sub">${d.dia} ${d.fecha} · ${esc(d.ciudad)}</div></div>
+        <div class="dia-arr">▾</div>
+      </div>
+      <div class="dia-body">
+        ${aHtml}
+        <div class="dia-actions">
+          <button class="btn-dashed" onclick="abrirNA('${d.id}')">＋ Actividad</button>
+          <button class="btn-sm" onclick="abrirED('${d.id}')">✏️ Editar día</button>
+        </div>
+        <textarea class="nota-area" placeholder="Notas del día..." onblur="saveNota('${d.id}',this.value)">${esc(d.nota||'')}</textarea>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleDia(id){document.getElementById('dc-'+id).classList.toggle('open');}
+function saveNota(id,v){iRef.child(id).update({nota:v});}
+function abrirNA(dId){actDiaId=dId;actIdx=null;document.getElementById('ma-tit').textContent='Nueva actividad';['a-hora','a-tit','a-desc','a-tip'].forEach(x=>document.getElementById(x).value='');abrir('m-act');setTimeout(()=>document.getElementById('a-tit').focus(),50);}
+function abrirEA(dId,i){const d=dias.find(x=>x.id===dId);if(!d)return;const a=(d.actividades||[])[i];if(!a)return;actDiaId=dId;actIdx=i;document.getElementById('ma-tit').textContent='Editar actividad';document.getElementById('a-hora').value=a.hora||'';document.getElementById('a-tit').value=a.titulo||'';document.getElementById('a-desc').value=a.desc||'';document.getElementById('a-tip').value=a.tip||'';abrir('m-act');setTimeout(()=>document.getElementById('a-tit').focus(),50);}
+function guardarA(){const titulo=document.getElementById('a-tit').value.trim();if(!titulo)return;const a={hora:document.getElementById('a-hora').value.trim(),titulo,desc:document.getElementById('a-desc').value.trim(),tip:document.getElementById('a-tip').value.trim()};const d=dias.find(x=>x.id===actDiaId);if(!d)return;const acts=[...(d.actividades||[])];if(actIdx!==null)acts[actIdx]=a;else acts.push(a);iRef.child(actDiaId).update({actividades:acts});cerrar();}
+function abrirDA(dId,i){document.getElementById('del-tit').textContent='¿Eliminar actividad?';delCb=()=>{const d=dias.find(x=>x.id===dId);if(!d)return;iRef.child(dId).update({actividades:(d.actividades||[]).filter((_,j)=>j!==i)});};abrir('m-del');}
+function abrirED(id){const d=dias.find(x=>x.id===id);if(!d)return;editDiaId=id;document.getElementById('d-emoji').value=d.emoji||'';document.getElementById('d-tit').value=d.titulo||'';document.getElementById('d-ciudad').value=d.ciudad||'';abrir('m-dia');setTimeout(()=>document.getElementById('d-tit').focus(),50);}
+function guardarD(){if(!editDiaId)return;iRef.child(editDiaId).update({emoji:document.getElementById('d-emoji').value.trim(),titulo:document.getElementById('d-tit').value.trim(),ciudad:document.getElementById('d-ciudad').value.trim()});cerrar();}
+
+// ════════════ GASTOS ════════════
+let gastos=[],gF='todos',gEId=null,gPag='Valen';
+const gRef=db.ref('gastos');
+gRef.on('value',s=>{const d=s.val()||{};gastos=Object.entries(d).map(([id,v])=>({id,...v})).sort((a,b)=>(b.ts||0)-(a.ts||0));renderG();});
+function renderG(){
+  const tot=gastos.reduce((s,g)=>s+g.total,0);
+  const vp=gastos.filter(g=>g.pagadoPor==='Valen').reduce((s,g)=>s+g.total,0);
+  const lp=gastos.filter(g=>g.pagadoPor==='Lara').reduce((s,g)=>s+g.total,0);
+  document.getElementById('c-tot').textContent=fmt(tot);
+  document.getElementById('c-pp').textContent=fmt(tot/2);
+  document.getElementById('c-v').textContent=fmt(vp);
+  document.getElementById('c-l').textContent=fmt(lp);
+  const pend=gastos.filter(g=>!g.saldado);
+  let vdl=0,ldv=0;pend.forEach(g=>{if(g.pagadoPor==='Lara')vdl+=g.total/2;else if(g.pagadoPor==='Valen')ldv+=g.total/2;});
+  const neto=vdl-ldv,de=document.getElementById('deuda');
+  if(Math.abs(neto)>0.005){const deu=neto>0?'Valen':'Lara',acr=deu==='Valen'?'Lara':'Valen';de.className='deuda no';document.getElementById('deuda-txt').innerHTML=`⚠ <b>${deu}</b> le debe a <b>${acr}</b>: ${fmt(Math.abs(neto))} <span style="font-weight:400;font-size:11px">(sin saldar)</span>`;}
+  else{de.className='deuda ok';document.getElementById('deuda-txt').textContent='✓ Todas las deudas están saldadas';}
+  const items=gastos.filter(g=>gF==='todos'?true:gF==='pendientes'?!g.saldado:g.saldado);
+  const lista=document.getElementById('gastos-lista');
+  if(!items.length){lista.innerHTML=`<div class="empty">${gF==='todos'?'Sin gastos. ¡Agregá el primero!':gF==='pendientes'?'No hay gastos pendientes.':'No hay gastos saldados.'}</div>`;}
+  else lista.innerHTML=items.map(g=>`<div class="gasto-item${g.saldado?' paid':''}">
+    <button class="chk-c ${g.saldado?'on':''}" onclick="toggleS('${g.id}')">${g.saldado?'✓':'○'}</button>
+    <div class="g-info"><div class="g-nom">${esc(g.concepto)}</div>
+      <div class="g-meta"><span class="badge ${g.pagadoPor==='Valen'?'bv':g.pagadoPor==='Lara'?'bl':'ba'}">Pagó ${g.pagadoPor}</span><span>${g.fecha||''}</span>${g.saldado?'<span class="badge bs">Saldado</span>':''}</div>
+    </div>
+    <div class="g-monto">${fmt(g.total)}</div>
+    <button class="ico" onclick="abrirMG('${g.id}')">✏️</button>
+    <button class="ico r" onclick="abrirDG('${g.id}')">🗑</button>
+  </div>`).join('');
+  const foot=document.getElementById('g-foot');
+  if(gastos.length){foot.style.display='flex';document.getElementById('gf-cnt').textContent=`${gastos.length} gastos · ${gastos.filter(g=>g.saldado).length} saldados`;document.getElementById('gf-tot').textContent=fmt(tot)+' total';}
+  else foot.style.display='none';
+}
+function setGF(f){gF=f;['todos','pendientes','saldados'].forEach(x=>document.getElementById('gf-'+x).className='fil'+(f===x?' on':''));renderG();}
+function toggleS(id){const g=gastos.find(x=>x.id===id);if(g)gRef.child(id).update({saldado:!g.saldado});}
+function selP(p){gPag=p;['Valen','Lara','Ambas'].forEach(x=>document.getElementById('seg-'+x).className='seg-b'+(x===p?' on':''));}
+function abrirMG(id){gEId=id;const g=id?gastos.find(x=>x.id===id):null;document.getElementById('mg-tit').textContent=g?'Editar gasto':'Nuevo gasto';document.getElementById('g-concepto').value=g?g.concepto:'';document.getElementById('g-monto').value=g?g.total:'';selP(g?g.pagadoPor:'Valen');abrir('m-gasto');setTimeout(()=>document.getElementById('g-concepto').focus(),50);}
+function guardarG(){const concepto=document.getElementById('g-concepto').value.trim();const total=parseFloat(document.getElementById('g-monto').value);if(!concepto||isNaN(total)||total<=0)return;if(gEId)gRef.child(gEId).update({concepto,total,pagadoPor:gPag});else gRef.push({concepto,total,pagadoPor:gPag,fecha:new Date().toLocaleDateString('es-AR'),saldado:false,ts:Date.now()});cerrar();}
+function abrirDG(id){document.getElementById('del-tit').textContent='¿Eliminar gasto?';delCb=()=>gRef.child(id).remove();abrir('m-del');}
+function confDel(){if(delCb)delCb();cerrar();}
+
+// ════════════ CHECKLIST ════════════
+let chkItems=[],cF='todas',eTaskId=null;
+const cRef=db.ref('checklist');
+const COLORES={Documentos:'#E07070',Reservas:'#6699CC',Equipaje:'#7EC860',Salud:'#F0BE6A',Finanzas:'#9B59B6',Otro:'#95a5a6'};
+const INIT_CHK=[
+  {titulo:'Pasaporte vigente (hasta oct 2027 mínimo)',urgencia:'alta',seccion:'Documentos'},
+  {titulo:'Tramitar seguro de viaje',urgencia:'alta',seccion:'Documentos'},
+  {titulo:'Sacar euros en efectivo',urgencia:'alta',seccion:'Finanzas'},
+  {titulo:'Avisar al banco de viajes al exterior',urgencia:'alta',seccion:'Finanzas'},
+  {titulo:'Reservar hospedaje Madrid · Barcelona · Oporto · París',urgencia:'alta',seccion:'Reservas'},
+  {titulo:'Reservar hospedaje Milán · Venecia · Florencia · Roma',urgencia:'alta',seccion:'Reservas'},
+  {titulo:'Comprar vuelo Oporto → París',urgencia:'alta',seccion:'Reservas'},
+  {titulo:'Comprar vuelo Roma → Madrid (18 sep)',urgencia:'alta',seccion:'Reservas'},
+  {titulo:'Reservar Sagrada Família — sagradafamilia.org',urgencia:'alta',seccion:'Reservas'},
+  {titulo:'Reservar Louvre — louvre.fr',urgencia:'alta',seccion:'Reservas'},
+  {titulo:'Reservar Coliseo — coopculture.it',urgencia:'alta',seccion:'Reservas'},
+  {titulo:'Reservar Museos Vaticanos — museivaticani.va',urgencia:'alta',seccion:'Reservas'},
+  {titulo:'Reservar Uffizi — uffizi.it',urgencia:'alta',seccion:'Reservas'},
+  {titulo:'⚠️ Reservar La Última Cena Milán — vivaticket.com (cupos limitadísimos)',urgencia:'alta',seccion:'Reservas'},
+  {titulo:'Reservar Cúpula Brunelleschi — operaduomo.firenze.it',urgencia:'alta',seccion:'Reservas'},
+  {titulo:'Vacuna hepatitis A y B (consultar médico)',urgencia:'media',seccion:'Salud'},
+  {titulo:'Llevar medicamentos básicos',urgencia:'media',seccion:'Salud'},
+  {titulo:'Descargar mapas offline (Google Maps)',urgencia:'media',seccion:'Otro'},
+  {titulo:'Cargar adaptador de enchufes europeo',urgencia:'media',seccion:'Equipaje'},
+  {titulo:'Ropa para clima europeo (fresco agosto/sep)',urgencia:'media',seccion:'Equipaje'},
+  {titulo:'Calzado muy cómodo para caminar mucho',urgencia:'media',seccion:'Equipaje'},
+  {titulo:'Candado para mochila/equipaje',urgencia:'baja',seccion:'Equipaje'},
+];
+cRef.once('value',s=>{if(!s.val())INIT_CHK.forEach(it=>cRef.push({...it,done:false,ts:Date.now()}));});
+cRef.on('value',s=>{const d=s.val()||{};chkItems=Object.entries(d).map(([id,v])=>({id,...v})).sort((a,b)=>a.ts-b.ts);renderC();});
+function renderC(){
+  const tot=chkItems.length,done=chkItems.filter(i=>i.done).length;
+  const pct=tot?Math.round(done/tot*100):0;
+  document.getElementById('prog-txt').textContent=`${done} de ${tot} completadas`;
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('celebracion').style.display=pct===100&&tot>0?'block':'none';
+  const filt=chkItems.filter(i=>cF==='todas'?true:cF==='pendientes'?!i.done:i.done);
+  const secs=[...new Set(chkItems.map(i=>i.seccion))];
+  const cont=document.getElementById('check-cont');
+  if(!filt.length){cont.innerHTML=`<div class="empty">No hay tareas ${cF==='pendientes'?'pendientes':'completadas'}.</div>`;return;}
+  cont.innerHTML=secs.map(sec=>{
+    const si=filt.filter(i=>i.seccion===sec);if(!si.length)return'';
+    return`<div class="check-sec">
+      <div class="csec-hd"><div class="sec-dot" style="background:${COLORES[sec]||'#999'}"></div><span class="sec-name">${sec}</span><span class="sec-cnt">${si.filter(i=>!i.done).length} pend.</span></div>
+      ${si.map(it=>`<div class="check-item${it.done?' done':''}">
+        <div class="chk-box" onclick="toggleC('${it.id}')">${it.done?'✓':''}</div>
+        <div class="item-body" onclick="toggleC('${it.id}')"><div class="item-tit">${esc(it.titulo)}</div><div><span class="urg ${it.urgencia}">${it.urgencia==='alta'?'🔴 Urgente':it.urgencia==='media'?'🟡 Medio plazo':'🟢 Sin prisa'}</span></div></div>
+        <div class="item-btns"><button class="ico" onclick="abrirET('${it.id}')">✏️</button><button class="ico r" onclick="abrirDT('${it.id}')">🗑</button></div>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+function setCF(f){cF=f;['todas','pendientes','completadas'].forEach(x=>document.getElementById('cf-'+x).className='fil'+(f===x?' on':''));renderC();}
+function toggleC(id){const it=chkItems.find(x=>x.id===id);if(it)cRef.child(id).update({done:!it.done});}
+function addTask(){const t=document.getElementById('new-task').value.trim();if(!t)return;cRef.push({titulo:t,urgencia:document.getElementById('new-urg').value,seccion:document.getElementById('new-sec').value,done:false,ts:Date.now()});document.getElementById('new-task').value='';}
+function abrirET(id){const it=chkItems.find(x=>x.id===id);if(!it)return;eTaskId=id;document.getElementById('t-tit').value=it.titulo;document.getElementById('t-urg').value=it.urgencia;document.getElementById('t-sec').value=it.seccion;abrir('m-task');setTimeout(()=>document.getElementById('t-tit').focus(),50);}
+function guardarT(){if(!eTaskId)return;cRef.child(eTaskId).update({titulo:document.getElementById('t-tit').value.trim(),urgencia:document.getElementById('t-urg').value,seccion:document.getElementById('t-sec').value});cerrar();}
+function abrirDT(id){document.getElementById('del-tit').textContent='¿Eliminar tarea?';delCb=()=>cRef.child(id).remove();abrir('m-del');}
+</script>
+</body>
+</html>
